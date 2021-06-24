@@ -1,14 +1,16 @@
-import  { BrowserRouter as Router , Route, Switch } from 'react-router-dom'
+import  { BrowserRouter as Router , Switch } from 'react-router-dom'
 import LoginPage from './Login'
 import HomePage from './Homepage'
+import AuthenticateRoute from './AuthenticateRoute';
+import ProtectiveRoute from './ProtetiveRoute';
 
 function route(props) {
         return (
             <div>
                 <Router>
                     <Switch>
-                        <Route exact path = '/'  component = {HomePage}/>
-                        <Route path = '/login'  component = {LoginPage}/>
+                        <AuthenticateRoute exact path = '/'  component = {LoginPage}/>
+                        <ProtectiveRoute path = '/home'  component = {HomePage}/>
                     </Switch>
                 </Router>
             </div>
