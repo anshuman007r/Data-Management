@@ -3,7 +3,7 @@ import Delete from '../assets/deleteIcon.png'
 import Edit from '../assets/editIcon.png'
 import Preview from '../assets/previewIcon.png'
 import logout from '../assets/logout.png'
-import { loggedOut, addStock } from '../redux/action'
+import { loggedOut, setStock } from '../redux/action'
 import add from '../assets/add.png'
 import { Modal, Button } from 'react-bootstrap'
 import { useState } from 'react'
@@ -19,16 +19,25 @@ function HomePage(props) {
         let [ errorAvailableItem, setErrorAvailableItem ] = useState(false)
         let [ cost, setCost ] = useState('')
         let [ errorCost, setErrorCost ] = useState(false)
-        let stockData = useSelector(state => state.reducer.stockData? state.reducer.stockData : [])
+        let stockData = useSelector(state => state.reducer.stockData? state.reducer.stockData.sort((prev, curr)=> prev.stockCategory[0]-curr.stockCategory[0]) : [])
         let [ deletePopup, setDeletePopup] = useState(false)
         let [ stockToDelete, setStockToDelete ] = useState('')
+        let [ viewStockPopup, setViewStockPopup ] = useState(false)
+        let [ previewStock, setPreviewStock ] = useState({})
+        let [ stockToEdit, setStockToEdit ] = useState({})
 
         const onLogoutClick = () =>{
             dispatch(loggedOut())
         }
 
-        const showModal = () =>{
+        const showModal = (editStock = {}) =>{
             toggleModal(true)
+            if(Object.keys(editStock).length > 0){
+                setStockCategory(editStock.stockCategory)
+                setAvailableItem(editStock.availableItem)
+                setCost(editStock.cost)
+                setStockToEdit(editStock)
+            }
         }
 
         const changeStockCategoryInput = (event) =>{
@@ -59,6 +68,11 @@ function HomePage(props) {
             }else{
                 setErrorAvailableItem(true)
             }
+        }
+
+        const openPreview = (previewStock) =>{
+            setPreviewStock(previewStock)
+            setViewStockPopup(true)
         }
     
         const changeCostInput = (event) =>{
@@ -91,8 +105,19 @@ function HomePage(props) {
             event.preventDefault()
             if(stockCategory !== '' && !errorStockCategory && cost !== '' && !errorCost && availableItem !== '' && !errorAvailableItem){
                 let stockItem = { stockCategory, availableItem, cost}
-                stockData.push(stockItem)
-                dispatch(addStock(stockData))
+                if(Object.keys(stockToEdit).length > 0){
+                    let editStockData = stockData.map((item)=>{
+                        if( item.stockCategory === stockItem.stockCategory){
+                            item.availableItem = stockItem.availableItem
+                            item.cost = stockItem.cost
+                        }
+                        return item
+                    })
+                    dispatch(setStock(editStockData))
+                }else{
+                    stockData.push(stockItem)
+                    dispatch(setStock(stockData))
+                }
                 setStockCategory('')
                 setAvailableItem('')
                 setCost('')
@@ -111,15 +136,15 @@ function HomePage(props) {
         
         const deleteStockFromStockData = () =>{
             let filterStockData = stockData.filter((item)=> item.stockCategory !== stockToDelete)
-            dispatch(addStock(filterStockData))
+            dispatch(setStock(filterStockData))
             setDeletePopup(false)
         }
 
         return (
             <div style={{height:'100%'}}>
                 <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow flex-row-reverse">
-                    <img src={logout} className="rounded-circle" onClick={onLogoutClick} style={{height:'30px', width : '35px'}} alt="logout"/>
-                    <h2 className="text-center col-sm-11 m-auto text-monospace text-light   ">Stock Detail</h2>
+                    <img src={logout} className="rounded-circle" onClick={onLogoutClick} style={{height:'28px', width : '35px'}} alt="logout"/>
+                    <h2 className="text-center col-sm-11 m-auto text-monospace text-light   ">Stock</h2>
                 </nav>
                 <section className= 'w-100 h-50 mx-auto' style={{ paddingLeft:'18%', paddingTop:'10%' }}>
                     <img src={add} onClick={showModal} className="mb-2 rounded-circle" style={{width:30, height:30, marginLeft:'72%'}} alt='add buton' />
@@ -142,9 +167,9 @@ function HomePage(props) {
                                         <td>{item.availableItem}</td>
                                         <td>{item.cost}</td>
                                         <td className='row justify-content-around w-75' style={{marginLeft:-10}}>
-                                            <img src={Preview}  style={{width:14 , height:14}} alt="action_preview"/>
-                                            <img src={Edit} style={{width:14 , height:14}} alt="action_edit"/>
-                                            <img src={Delete}      onClick={()=>openDeleteModal(item.stockCategory)} style={{width:14 , height:14}} alt="action_delete"/>
+                                            <img src={Preview} onClick={()=> openPreview(item)}  style={{width:14 , height:14}} alt="action_preview"/>
+                                            <img src={Edit} onClick={()=> showModal(item)} style={{width:14 , height:14}} alt="action_edit"/>
+                                            <img src={Delete} onClick={()=>openDeleteModal(item.stockCategory)} style={{width:14 , height:14}} alt="action_delete"/>
                                         </td>
                                     </tr>
                                 ))
@@ -154,7 +179,7 @@ function HomePage(props) {
                 </section>
                 <Modal show={show}>
                     <Modal.Header closeButton onClick={closeModal}>
-                    <Modal.Title>Add new stock</Modal.Title>
+                    <Modal.Title>{Object.keys(stockToEdit).length > 0 ? 'Edit' : 'Add new'} stock</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
                     <form className="font-weight-bold">
@@ -188,7 +213,7 @@ function HomePage(props) {
                             errorCost  &&
                             <div className="text-danger text-center" style={{marginTop:-10, marginRight:'13%', fontSize:'14px'}}> Invalid Cost</div>
                         }
-                        <button type="submit" class="btn btn-primary" onClick={onAddStock}>Add</button>
+                        <button type="submit" class="btn btn-primary" onClick={onAddStock}>{Object.keys(stockToEdit) ? 'Edit' : 'Add' }</button>
                     </form>
                     </Modal.Body>
                 </Modal>
@@ -202,6 +227,40 @@ function HomePage(props) {
                     </Button>
                     <Button variant="secondary" onClick={cancelDeleteOfStock}>
                         No
+                    </Button>
+                    </Modal.Footer>
+                </Modal>
+                <Modal show={viewStockPopup} onHide={()=>setViewStockPopup(false)}>
+                    <Modal.Header closeButton>
+                    <Modal.Title>Stock detail</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                    <div class="form-group row ">
+                            <label htmlFor="stockCategory" class="col-8 col-form-label" >Stock Category</label>
+                            <div class="col-4 mt-2">
+                                <strong>{previewStock.stockCategory}</strong>
+                            </div>
+                        </div>
+                        <div class="form-group row ">
+                            <label for="availableItem" class="col-8 col-form-label" >Available Item</label>
+                            <div class="col-4 mt-2">
+                                <strong>{previewStock.availableItem}</strong>
+                            </div>
+                        </div>
+                        {
+                            errorAvailableItem  &&
+                            <div className="text-danger text-center" style={{marginTop:-10, marginRight:'1.2%', fontSize:'14px'}}> Invalid available item</div>
+                        }
+                        <div class="form-group row">
+                            <label for="cost" class="col-8 col-form-label">Cost</label>
+                            <div class="col-4 mt-2">
+                                <strong>{previewStock.cost}</strong>
+                            </div>
+                        </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                    <Button variant="primary" onClick={()=>setViewStockPopup(false)}>
+                        Close
                     </Button>
                     </Modal.Footer>
                 </Modal>

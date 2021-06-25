@@ -19,7 +19,7 @@ const reducer = (state = initialState, action) =>{
                 loggedIn : !state.loggedIn,
                 userData : {}
             }
-        case 'ADD_STOCK' :
+        case 'SET_STOCK' :
             return {
                 ...state,
                 stockData : action.stockData

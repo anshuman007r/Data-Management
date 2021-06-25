@@ -7,7 +7,7 @@ export const loggedOut = () =>({
     type : 'LOGGED_OUT'
 })
 
-export const addStock = (stockData) =>({
-    type : 'ADD_STOCK',
+export const setStock = (stockData) =>({
+    type : 'SET_STOCK',
     stockData
 })
