@@ -1,30 +1,29 @@
-// import logout from '../assets/logout.png'
-import Delete from '../assets/deleteIcon.png'
-import Edit from '../assets/editIcon.png'
-import Preview from '../assets/previewIcon.png'
 import logout from '../assets/logout.png'
 import { loggedOut, setStock } from '../redux/action'
 import add from '../assets/add.png'
-import { Modal, Button } from 'react-bootstrap'
 import { useState } from 'react'
 import { REGEX } from '../utils/WebUtil'
 import { useSelector, useDispatch } from 'react-redux' 
+import Table from  './Table'
+import DeleteModal from './Modals/DeleteModal'
+import PreviewModal from './Modals/PreviewModal'
+import AddEditModal from './Modals/AddEditModal'
 
 function HomePage(props) {
         const dispatch = useDispatch()
-        let [show,toggleModal] = useState(false) 
-        let [ stockCategory, setStockCategory ] = useState('')
-        let [ errorStockCategory, setErrorStockCategory ] = useState(false)
-        let [ availableItem, setAvailableItem ] = useState('')
-        let [ errorAvailableItem, setErrorAvailableItem ] = useState(false)
-        let [ cost, setCost ] = useState('')
-        let [ errorCost, setErrorCost ] = useState(false)
-        let stockData = useSelector(state => state.reducer.stockData? state.reducer.stockData.sort((prev, curr)=> prev.stockCategory[0]-curr.stockCategory[0]) : [])
-        let [ deletePopup, setDeletePopup] = useState(false)
-        let [ stockToDelete, setStockToDelete ] = useState('')
-        let [ viewStockPopup, setViewStockPopup ] = useState(false)
-        let [ previewStock, setPreviewStock ] = useState({})
-        let [ stockToEdit, setStockToEdit ] = useState({})
+        const [show,toggleModal] = useState(false) 
+        const [ stockCategory, setStockCategory ] = useState('')
+        const [ errorStockCategory, setErrorStockCategory ] = useState(false)
+        const [ availableItem, setAvailableItem ] = useState('')
+        const [ errorAvailableItem, setErrorAvailableItem ] = useState(false)
+        const [ cost, setCost ] = useState('')
+        const [ errorCost, setErrorCost ] = useState(false)
+        const stockData = useSelector(state => state.reducer.stockData? state.reducer.stockData.sort((prev, curr)=> prev.stockCategory[0]-curr.stockCategory[0]) : [])
+        const [ deletePopup, setDeletePopup] = useState(false)
+        const [ stockToDelete, setStockToDelete ] = useState('')
+        const [ viewStockPopup, setViewStockPopup ] = useState(false)
+        const [ previewStock, setPreviewStock ] = useState({})
+        const [ stockToEdit, setStockToEdit ] = useState({})
 
         const onLogoutClick = () =>{
             dispatch(loggedOut())
@@ -90,10 +89,14 @@ function HomePage(props) {
         }
 
         const closeModal = () =>{
+            setStockToEdit({})
             toggleModal(false)
             setErrorCost(false)
             setErrorAvailableItem(false)
             setErrorStockCategory(false)
+            setStockCategory('')
+            setAvailableItem('')
+            setCost('')
         }
 
         const openDeleteModal = (stockToDelete) =>{
@@ -104,7 +107,8 @@ function HomePage(props) {
         const onAddStock = (event) =>{
             event.preventDefault()
             if(stockCategory !== '' && !errorStockCategory && cost !== '' && !errorCost && availableItem !== '' && !errorAvailableItem){
-                let stockItem = { stockCategory, availableItem, cost}
+                let id = stockData.length + 1
+                let stockItem = { id, stockCategory, availableItem, cost}
                 if(Object.keys(stockToEdit).length > 0){
                     let editStockData = stockData.map((item)=>{
                         if( item.stockCategory === stockItem.stockCategory){
@@ -114,6 +118,7 @@ function HomePage(props) {
                         return item
                     })
                     dispatch(setStock(editStockData))
+                    setStockToEdit({})
                 }else{
                     stockData.push(stockItem)
                     dispatch(setStock(stockData))
@@ -140,130 +145,75 @@ function HomePage(props) {
             setDeletePopup(false)
         }
 
+        const prevStock = () =>{
+            let arrayStockCategory = stockData.map((item)=>item.stockCategory)
+            let indexOfPreview = arrayStockCategory.indexOf(previewStock.stockCategory)
+            if(indexOfPreview > 0){
+                let newPreviewStock = stockData[indexOfPreview-1]
+                setPreviewStock(newPreviewStock)
+            }
+        }
+
+        const nextStock = () =>{
+            let arrayStockCategory = stockData.map((item)=>item.stockCategory)
+            let indexOfPreview = arrayStockCategory.indexOf(previewStock.stockCategory)
+            if(indexOfPreview < stockData.length -1){
+                let newPreviewStock = stockData[indexOfPreview+1]
+                setPreviewStock(newPreviewStock)
+            }
+
+        }
+
         return (
             <div style={{height:'100%'}}>
                 <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow flex-row-reverse">
                     <img src={logout} className="rounded-circle" onClick={onLogoutClick} style={{height:'28px', width : '35px'}} alt="logout"/>
-                    <h2 className="text-center col-sm-11 m-auto text-monospace text-light   ">Stock</h2>
+                    <h2 className="text-center col-sm-11 m-auto text-monospace text-light   "> Canteen Stock</h2>
                 </nav>
                 <section className= 'w-100 h-50 mx-auto' style={{ paddingLeft:'18%', paddingTop:'10%' }}>
-                    <img src={add} onClick={showModal} className="mb-2 rounded-circle" style={{width:30, height:30, marginLeft:'72%'}} alt='add buton' />
-                    <table className="table w-75 shadow ">
-                        <thead className="thead-dark shadow">
-                            <tr className="shadow">
-                            <th scope="col">Sl no.</th>
-                            <th scope="col">Stock Category</th>
-                            <th scope="col">Available Item</th>
-                            <th scope="col">Cost</th>
-                            <th scope="col">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody >
-                            {
-                                stockData.map((item,index)=>(
-                                    <tr className="shadow">
-                                        <th scope="row">{index+1}</th>
-                                        <td>{item.stockCategory}</td>
-                                        <td>{item.availableItem}</td>
-                                        <td>{item.cost}</td>
-                                        <td className='row justify-content-around w-75' style={{marginLeft:-10}}>
-                                            <img src={Preview} onClick={()=> openPreview(item)}  style={{width:14 , height:14}} alt="action_preview"/>
-                                            <img src={Edit} onClick={()=> showModal(item)} style={{width:14 , height:14}} alt="action_edit"/>
-                                            <img src={Delete} onClick={()=>openDeleteModal(item.stockCategory)} style={{width:14 , height:14}} alt="action_delete"/>
-                                        </td>
-                                    </tr>
-                                ))
-                            }
-                        </tbody>
-                    </table>
+                    <img src={add} onClick={()=>showModal()} className="mb-2 rounded-circle" style={{width:30, height:30, marginLeft:'72%'}} alt='add buton' />
+                    <Table
+                        stockData={stockData}
+                        openPreview={openPreview}
+                        openDeleteModal={openDeleteModal}
+                        showModal={showModal}
+                    />
                 </section>
-                <Modal show={show}>
-                    <Modal.Header closeButton onClick={closeModal}>
-                    <Modal.Title>{Object.keys(stockToEdit).length > 0 ? 'Edit' : 'Add new'} stock</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                    <form className="font-weight-bold">
-                        <div class="form-group row ">
-                            <label htmlFor="stockCategory" class="col-4 col-form-label" >Stock Category</label>
-                            <div class="col-8">
-                                <input type="text" name='stockCategory' value={stockCategory} class="form-control" id="stockCategory" onChange={changeStockCategoryInput} onBlur={validateStockCategory} placeholder="Enter stock category"/>
-                            </div>
-                        </div>
-                        {
-                            errorStockCategory  &&
-                            <div className="text-danger text-center" style={{marginTop:-10, marginRight:'0.8%', fontSize:'14px'}}> Invalid stock category</div>
-                        }
-                        <div class="form-group row ">
-                            <label for="availableItem" class="col-4 col-form-label" >Available Item</label>
-                            <div class="col-8">
-                                <input type="text" name='availableItem' value={availableItem} class="form-control" id="availableItem" onChange={changeAvailableItemInput} onBlur={validateAvailableItem} placeholder="Enter the number of available item"/>
-                            </div>
-                        </div>
-                        {
-                            errorAvailableItem  &&
-                            <div className="text-danger text-center" style={{marginTop:-10, marginRight:'1.2%', fontSize:'14px'}}> Invalid available item</div>
-                        }
-                        <div class="form-group row">
-                            <label for="cost" class="col-4 col-form-label">Cost</label>
-                            <div class="col-8">
-                                <input type="text" name='cost' value={cost} class="form-control" id="cost" onChange={changeCostInput} onBlur={validateCost} placeholder="Enter the cost of each item"/>
-                            </div>
-                        </div>
-                        {
-                            errorCost  &&
-                            <div className="text-danger text-center" style={{marginTop:-10, marginRight:'13%', fontSize:'14px'}}> Invalid Cost</div>
-                        }
-                        <button type="submit" class="btn btn-primary" onClick={onAddStock}>{Object.keys(stockToEdit) ? 'Edit' : 'Add' }</button>
-                    </form>
-                    </Modal.Body>
-                </Modal>
-                <Modal show={deletePopup} onHide={()=>setDeletePopup(false)}>
-                    <Modal.Header closeButton>
-                    <Modal.Title>Are you sure want to delete <strong>{stockToDelete}</strong> ?</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Footer>
-                    <Button variant="primary" onClick={deleteStockFromStockData}>
-                        Yes
-                    </Button>
-                    <Button variant="secondary" onClick={cancelDeleteOfStock}>
-                        No
-                    </Button>
-                    </Modal.Footer>
-                </Modal>
-                <Modal show={viewStockPopup} onHide={()=>setViewStockPopup(false)}>
-                    <Modal.Header closeButton>
-                    <Modal.Title>Stock detail</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                    <div class="form-group row ">
-                            <label htmlFor="stockCategory" class="col-8 col-form-label" >Stock Category</label>
-                            <div class="col-4 mt-2">
-                                <strong>{previewStock.stockCategory}</strong>
-                            </div>
-                        </div>
-                        <div class="form-group row ">
-                            <label for="availableItem" class="col-8 col-form-label" >Available Item</label>
-                            <div class="col-4 mt-2">
-                                <strong>{previewStock.availableItem}</strong>
-                            </div>
-                        </div>
-                        {
-                            errorAvailableItem  &&
-                            <div className="text-danger text-center" style={{marginTop:-10, marginRight:'1.2%', fontSize:'14px'}}> Invalid available item</div>
-                        }
-                        <div class="form-group row">
-                            <label for="cost" class="col-8 col-form-label">Cost</label>
-                            <div class="col-4 mt-2">
-                                <strong>{previewStock.cost}</strong>
-                            </div>
-                        </div>
-                    </Modal.Body>
-                    <Modal.Footer>
-                    <Button variant="primary" onClick={()=>setViewStockPopup(false)}>
-                        Close
-                    </Button>
-                    </Modal.Footer>
-                </Modal>
+                <AddEditModal
+                    show={show}
+                    closeModal={closeModal}
+                    stockToEdit={stockToEdit}
+                    stockCategory={stockCategory}
+                    changeStockCategoryInput={changeStockCategoryInput}
+                    validateStockCategory={validateStockCategory}
+                    availableItem={availableItem}
+                    changeAvailableItemInput={changeAvailableItemInput}
+                    validateAvailableItem={validateAvailableItem}
+                    cost={cost}
+                    validateCost={validateCost}
+                    changeCostInput={changeCostInput}
+                    errorCost={errorCost}
+                    errorAvailableItem={errorAvailableItem}
+                    errorStockCategory={errorStockCategory}
+                    onAddStock={onAddStock}
+                />  
+                <DeleteModal
+                    deletePopup={deletePopup}
+                    setDeletePopup={setDeletePopup}
+                    stockToDelete={stockToDelete}
+                    deleteStockFromStockData={deleteStockFromStockData}
+                    cancelDeleteOfStock={cancelDeleteOfStock}
+
+                />
+                <PreviewModal
+                    viewStockPopup={viewStockPopup}
+                    setViewStockPopup={setViewStockPopup}
+                    previewStock={previewStock}
+                    errorAvailableItem={errorAvailableItem}
+                    prevStock={prevStock}
+                    nextStock={nextStock}
+                    stockData={stockData}
+                />
             </div>
         );
 }

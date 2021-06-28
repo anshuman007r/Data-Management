@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { REGEX, USERNAME, PASSWORD } from '../utils/WebUtil' 
 import { loggedIn } from '../redux/action'
+import TextInput from './common/TextInput'
 
 function Login(props) {
     let [ userName, setUserName ] = useState('')
@@ -65,7 +66,7 @@ function Login(props) {
 
 
     return (
-      <div className=" card container shadow-lg rounded" style={{width : '45%', marginTop:'15%' }}>
+      <div className=" card container shadow-lg rounded" style={{width : '50%', marginTop:'15%' }}>
             <form className="mt-5 pd-5">
             {
                 invalidDataError && 
@@ -75,34 +76,41 @@ function Login(props) {
                 </div>
 
             } 
-
-                <div className="form-group row">
-                    <label htmlFor="inputEmail3" className="col-sm-2 col-form-label">Email</label>
-                    <div className="col-sm-10 ">
-                        <input type="text" name='userName' value={userName} className="form-control shadow" id="inputEmail3" onChange={changeUserNameInput} onBlur={validateUserName}/>
-                    </div>
+            <TextInput
+                label = "Username"
+                type = "text"
+                name = "userName"
+                value = {userName}
+                onChange = {changeUserNameInput}
+                onBlur = {validateUserName}
+                error = {errorUserName}
+                errorMessage = "Invalid username"
+                marginRight = "47%"
+                labelStyle = "col-sm-2 col-form-label"
+                inputStyle = "col-sm-10"
+                placeholder = ''
+                loginField = {true}
+            />
+            <TextInput
+                label = "Password"
+                type = "password"
+                name = "password"
+                value = {password}
+                onChange = {changePasswordInput}
+                onBlur = {validatePassword}
+                error = {errorPassword}
+                errorMessage = "Invalid password"
+                marginRight = "47%"
+                labelStyle = "col-sm-2 col-form-label"
+                inputStyle = "col-sm-10"
+                placeholder = ''
+                loginField = {true}
+            />
+            <div className="form-group row">
+                <div className="col-sm-10">
+                    <button type="submit" className="btn btn-primary shadow" onClick={onAuthenticate}>Sign in</button>
                 </div>
-                {
-                    errorUserName  &&
-                    <div className="text-danger text-center" style={{marginTop:-10, marginRight:'50%', fontSize:'14px'}}> Invalid email</div>
-                }
-
-                <div className="form-group row">
-                    <label htmlFor="inputPassword3" className="col-sm-2 col-form-label">Password</label>
-                    <div className="col-sm-10 ">
-                        <input type="password" name="password" value={password} className="form-control shadow" id="inputPassword3" onChange={changePasswordInput} onBlur={validatePassword}/>
-                    </div>
-                </div>
-                {
-                    errorPassword && 
-                    <div className="text-danger text-center" style={{marginTop:-10, marginRight:'47%', fontSize:'14px'}}> Invalid Password</div>
-                }
-
-                <div className="form-group row">
-                    <div className="col-sm-10">
-                        <button type="submit" className="btn btn-primary shadow" onClick={onAuthenticate}>Sign in</button>
-                    </div>
-                </div>
+            </div>
         </form>
       </div>
     );
