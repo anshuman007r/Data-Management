@@ -42,12 +42,10 @@ function HomePage(props) {
         const changeStockCategoryInput = (event) =>{
             setErrorStockCategory(false)
             let { value } = event.target
-            console.log(value)
             setStockCategory(value)
         }
 
         const validateStockCategory = () =>{
-            console.log(stockCategory,REGEX.alpha)
             if(REGEX.alpha.test(stockCategory)){
                 setErrorStockCategory(false)
             }else{
@@ -111,7 +109,8 @@ function HomePage(props) {
                 let stockItem = { id, stockCategory, availableItem, cost}
                 if(Object.keys(stockToEdit).length > 0){
                     let editStockData = stockData.map((item)=>{
-                        if( item.stockCategory === stockItem.stockCategory){
+                        if( item.id === stockToEdit.id){
+                            item.stockCategory = stockItem.stockCategory
                             item.availableItem = stockItem.availableItem
                             item.cost = stockItem.cost
                         }
@@ -168,7 +167,7 @@ function HomePage(props) {
             <div style={{height:'100%'}}>
                 <nav className="navbar navbar-expand-lg navbar-dark bg-dark shadow flex-row-reverse">
                     <img src={logout} className="rounded-circle" onClick={onLogoutClick} style={{height:'28px', width : '35px'}} alt="logout"/>
-                    <h2 className="text-center col-sm-11 m-auto text-monospace text-light   "> Canteen Stock</h2>
+                    <h2 className="text-center col-11 m-auto text-monospace text-light"> Canteen Stock</h2>
                 </nav>
                 <section className= 'w-100 h-50 mx-auto' style={{ paddingLeft:'18%', paddingTop:'10%' }}>
                     <img src={add} onClick={()=>showModal()} className="mb-2 rounded-circle" style={{width:30, height:30, marginLeft:'72%'}} alt='add buton' />

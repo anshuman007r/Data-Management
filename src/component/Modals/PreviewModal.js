@@ -10,14 +10,14 @@ function PreviewModal(props){
             </Modal.Header>
             <Modal.Body>
             <div class="form-group row ">
-                    <label htmlFor="stockCategory" class="col-8 col-form-label" >Stock Category</label>
-                    <div class="col-4 mt-2">
+                    <label htmlFor="stockCategory" class="col-sm-8 col-form-label" >Stock Category</label>
+                    <div class="col-sm-4 mt-2">
                         <strong>{props.previewStock.stockCategory}</strong>
                     </div>
                 </div>
                 <div class="form-group row ">
-                    <label for="availableItem" class="col-8 col-form-label" >Available Item</label>
-                    <div class="col-4 mt-2">
+                    <label for="availableItem" class="col-sm-8 col-form-label" >Available Item</label>
+                    <div class="col-sm-4 mt-2">
                         <strong>{props.previewStock.availableItem}</strong>
                     </div>
                 </div>
@@ -26,7 +26,7 @@ function PreviewModal(props){
                     <div className="text-danger text-center" style={{marginTop:-10, marginRight:'1.2%', fontSize:'14px'}}> Invalid available item</div>
                 }
                 <div class="form-group row">
-                    <label for="cost" class="col-8 col-form-label">Cost</label>
+                    <label for="cost" class="col-sm-8 col-form-label">Cost</label>
                     <div class="col-4 mt-2">
                         <strong>{props.previewStock.cost}</strong>
                     </div>

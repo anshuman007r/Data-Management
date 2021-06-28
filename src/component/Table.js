@@ -18,14 +18,14 @@ function Table(props){
             <tbody >
                 {
                     props.stockData.map((item,index)=>(
-                        <tr className="shadow">
+                        <tr className="shadow" key = {index} >
                             <th scope="row">{index+1}</th>
                             <td>{item.stockCategory}</td>
                             <td>{item.availableItem}</td>
                             <td>{item.cost}</td>
                             <td className='row justify-content-around w-75' style={{marginLeft:-10}}>
-                                <img src={Preview} onClick={()=> props.openPreview(item)}  style={{width:14 , height:14}} alt="action_preview"/>
-                                <img src={Edit} onClick={()=> props.showModal(item)} style={{width:15 , height:14}} alt="action_edit"/>
+                                <img src={Preview} onClick={()=> props.openPreview(item)} style={{width:14 , height:14}} alt="action_preview"/>
+                                <img src={Edit} onClick={()=> props.showModal(item)} style={{width:15 , height:14}}  alt="action_edit"/>
                                 <img src={Delete} onClick={()=>props.openDeleteModal(item.stockCategory)} style={{width:14 , height:14}} alt="action_delete"/>
                             </td>
                         </tr>

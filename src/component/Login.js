@@ -66,7 +66,7 @@ function Login(props) {
 
 
     return (
-      <div className=" card container shadow-lg rounded" style={{width : '50%', marginTop:'15%' }}>
+      <div className=" card container shadow-lg rounded" style={{width : '40%', marginTop:'15%' }}>
             <form className="mt-5 pd-5">
             {
                 invalidDataError && 
@@ -85,9 +85,9 @@ function Login(props) {
                 onBlur = {validateUserName}
                 error = {errorUserName}
                 errorMessage = "Invalid username"
-                marginRight = "47%"
-                labelStyle = "col-sm-2 col-form-label"
-                inputStyle = "col-sm-10"
+                marginRight = "25%"
+                labelStyle = "col-xl-3 col-form-label"
+                inputStyle = "col-xl-9"
                 placeholder = ''
                 loginField = {true}
             />
@@ -100,9 +100,9 @@ function Login(props) {
                 onBlur = {validatePassword}
                 error = {errorPassword}
                 errorMessage = "Invalid password"
-                marginRight = "47%"
-                labelStyle = "col-sm-2 col-form-label"
-                inputStyle = "col-sm-10"
+                marginRight = "25%"
+                labelStyle = "col-xl-3 col-form-label"
+                inputStyle = "col-xl-9"
                 placeholder = ''
                 loginField = {true}
             />

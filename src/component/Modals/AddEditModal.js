@@ -19,8 +19,8 @@ function AddEditModal(props){
                     error = {props.errorStockCategory}
                     errorMessage = "Invalid stock category"
                     marginRight = "0.8%"
-                    labelStyle = "col-4 col-form-label"
-                    inputStyle = "col-8"
+                    labelStyle = "col-sm-4 col-form-label"
+                    inputStyle = "col-sm-8"
                     placeholder="Enter stock category"
                     loginField={false}
                 />
@@ -34,8 +34,8 @@ function AddEditModal(props){
                     error = {props.errorAvailableItem}
                     errorMessage = "Invalid available item"
                     marginRight = '1.2%'
-                    labelStyle = "col-4 col-form-label"
-                    inputStyle = "col-8"
+                    labelStyle = "col-sm-4 col-form-label"
+                    inputStyle = "col-sm-8"
                     placeholder="Enter the number of available item"
                     loginField={false}
                 />
@@ -49,8 +49,8 @@ function AddEditModal(props){
                     error = {props.errorCost}
                     errorMessage = "Invalid cost"
                     marginRight = '13%'
-                    labelStyle = "col-4 col-form-label"
-                    inputStyle = "col-8"
+                    labelStyle = "col-sm-4 col-form-label"
+                    inputStyle = "col-sm-8"
                     placeholder="Enter the cost of each item"
                     loginField={false}
                 />
