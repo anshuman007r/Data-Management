@@ -5,11 +5,11 @@ import { loggedIn } from '../redux/action'
 import TextInput from './common/TextInput'
 
 function Login(props) {
-    let [ userName, setUserName ] = useState('')
-    let [ password, setPassword ] = useState('') 
-    let [ errorUserName, setErrorUserName ] = useState(false)
-    let [ errorPassword, setErrorPassword ] = useState(false)
-    let [ invalidDataError,setinvalidDataError] = useState(false)
+    const [ userName, setUserName ] = useState('')
+    const [ password, setPassword ] = useState('') 
+    const [ errorUserName, setErrorUserName ] = useState(false)
+    const [ errorPassword, setErrorPassword ] = useState(false)
+    const [ invalidDataError,setinvalidDataError] = useState(false)
     const dispatch = useDispatch()
     
 
